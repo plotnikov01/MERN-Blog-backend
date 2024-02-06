@@ -3,11 +3,11 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import { loginValidation, registerValidation } from './validation.js';
+import { loginValidation, postCreateValidation, registerValidation } from './validation.js';
 
 import { checkAuth, handleValidationErrors } from './utils/index.js';
 
-import { UserController } from './controllers/index.js';
+import { UserController, PostController } from './controllers/index.js';
 
 dotenv.config();
 mongoose
@@ -23,6 +23,15 @@ app.use(cors());
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getMe);
+
+app.get('/tags', PostController.getLastTags);
+
+app.get('/posts', PostController.getAll);
+app.get('/posts/tags', PostController.getLastTags);
+app.get('/posts/:id', PostController.getOne);
+app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create);
+app.delete('/posts/:id', checkAuth, PostController.remove);
+app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update);
 
 app.listen(process.env.PORT, () => {
   console.log('Server OK');
